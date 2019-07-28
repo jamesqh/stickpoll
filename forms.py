@@ -4,7 +4,7 @@ from copy import copy
 
 from flask_wtf import FlaskForm
 from wtforms import (StringField, PasswordField, BooleanField, RadioField,
-                     FieldList)
+                     FieldList, RecaptchaField)
 from wtforms.validators import Email, EqualTo, InputRequired, Length, Optional
 
 from wtforms.widgets.core import HTMLString, RadioInput
@@ -81,7 +81,7 @@ class NewPollForm(FlaskForm):
                                  default="checked")
 
 class NewPollFormWithCaptcha(NewPollForm):
-    captcha = BooleanField("I am a human")
+    captcha = RecaptchaField()
 
 class EnterPasswordForm(FlaskForm):
     password = PasswordField("Password", validators=[InputRequired()])
@@ -121,4 +121,4 @@ class VoteForm(FlaskForm):
     ballot_json = StringField("Preferred choices")
 
 class VoteFormWithCaptcha(VoteForm):
-    captcha = BooleanField("I am a human")
+    captcha = RecaptchaField()
