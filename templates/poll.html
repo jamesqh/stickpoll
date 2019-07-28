@@ -40,7 +40,6 @@
     <div id="hide_if_javascript" style="display:block">
     List your preferred choice numbers in order, separated by semicolons:<br>
     {{ form.ballot_json(id="ballot_json_field") }}
-<!--    <input type="text" id="ballot_json_field" name="ballot_json" size=200><br>-->
     </div>
     {% if form.captcha is defined %}
     {{ form.captcha() }}
@@ -48,7 +47,6 @@
     <input class="button" type="submit" value="Submit">
   </form>
   <p>
-  <div id="ballot_readout"></div>
   <div class="level">
     <div class="level-left">
       {% if early_results %}
@@ -123,7 +121,6 @@ var vm = new Vue({
     },
     updateBallotField: function(evt) {
       document.getElementById("ballot_json_field").value = this.$data.selected_choices.map(x => x.num).join(";");
-      document.getElementById("ballot_readout").innerText = this.$data.selected_choices.map(x => x.name).join(";");
     }
   }
 })

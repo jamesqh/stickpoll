@@ -106,6 +106,11 @@ def get_poll(poll_id):
     if poll_id in session["votes"]:
         flash("I think you've already voted on this!")
     if request.method == "POST":
+        if not form.validate_on_submit():
+            for error_field, errors in form.errors.items():
+                for error in errors:
+                    flash("{0}: {1}".format(error_field, error))
+            return redirect(url_for("polls.get_poll", poll_id=poll_id))
         # TODO: more aggressively deny voting with no credential?
         # or does CSRF token work alone?
 
