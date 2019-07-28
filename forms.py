@@ -2,9 +2,9 @@
 
 from copy import copy
 
-from flask_wtf import FlaskForm
+from flask_wtf import FlaskForm, RecaptchaField
 from wtforms import (StringField, PasswordField, BooleanField, RadioField,
-                     FieldList, RecaptchaField)
+                     FieldList)
 from wtforms.validators import Email, EqualTo, InputRequired, Length, Optional
 
 from wtforms.widgets.core import HTMLString, RadioInput
