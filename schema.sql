@@ -1,0 +1,46 @@
+DROP TABLE IF EXISTS Questions;
+DROP TABLE IF EXISTS Choices;
+DROP TABLE IF EXISTS Ballots;
+DROP TABLE IF EXISTS Results;
+DROP TABLE IF EXISTS Cookies;
+
+CREATE TABLE Questions (
+  id INTEGER PRIMARY KEY,
+  title TEXT NOT NULL,
+  text TEXT NOT NULL,
+  open INTEGER NOT NULL,
+  close_date INTEGER NOT NULL,
+  early_results INTEGER NOT NULL,
+  email TEXT,
+  token TEXT NOT NULL
+);
+
+CREATE TABLE Choices (
+  id INTEGER PRIMARY KEY,
+  text TEXT NOT NULL,
+  question_id INTEGER,
+  choice_number INTEGER,
+  FOREIGN KEY(question_id) REFERENCES Questions(id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Ballots (
+  id INTEGER PRIMARY KEY,
+  ballot_string TEXT NOT NULL,
+  count INTEGER DEFAULT 0,
+  question_id INTEGER,
+  FOREIGN KEY(question_id) REFERENCES Questions(id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Results (
+  id INTEGER PRIMARY KEY,
+  question_id INTEGER,
+  results_json TEXT NOT NULL,
+  last_update INTEGER,
+  FOREIGN KEY(question_id) REFERENCES Questions(id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Cookies (
+  id INTEGER PRIMARY KEY,
+  hash TEXT,
+  last_seen INTEGER
+);

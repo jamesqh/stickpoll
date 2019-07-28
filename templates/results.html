@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<!--<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>-->
+<script src="{{ url_for('static', filename='chart.min.js') }}"></script>
+<script src="{{ url_for('static', filename='chartjs-plugin-annotation.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container" id="main">
+  {% if poll_open %}
+  <div class="level"><div class="level-left"><div class="level-item"><a class="has-text-link" href="{{ url_for('polls.get_poll', poll_id=poll_id) }}">Back</a></div></div></div>
+  {% endif %}
+  <h2 class="title is-3 has-text-black">{{ title }}</h2>
+  <h5 class="subtitle is-5 has-text-black">{{ text }}</h5>
+  {% if winners|length == 1 %}
+  <p>
+    <span class="has-text-weight-bold">{{ winners[0] }}</span> won after {{ results|length }} rounds of voting. The graph and tables below show the results of each round.
+  </p>
+  <p>
+    In each round the candidate(s) with the lowest votes were eliminated from the ballots, with votes for those candidates distributed to each ballot's candidate of next preference.
+    This continued until <span class="has-text-weight-bold">{{ winners[0] }}</span> reached the majority threshold of over 50% of votes, making it the winner.
+  </p>
+  {% else %}
+  <p>
+    No overall majority was reached. After {{ results|length }} rounds of voting, the remaining candidates were:
+    <ul>
+      {% for winner in winners %}
+      <li><span class="has-text-weight-bold">{{ winner }}</span></li>
+      {% endfor %}
+    </ul>
+  </p>
+  <p>
+    In each round the candidate(s) with the lowest votes were eliminated from the ballots, with votes for those candidates distributed to each ballot's candidate of next preference.
+    In the final round, all candidates had the same amount of votes, and eliminating them would have left no winner.
+    Therefore, the candidates listed above were <span class="has-text-weight-bold">joint winners.</span>
+  </p>
+  {% endif %}
+  <div>
+  <canvas id="graph" height="600"></canvas>
+  </div>
+  <nav class="pagination is-centered">
+    <button id="page_prev" class="pagination-previous" onclick="update_prev()" disabled>&lt;</button>
+    <ul class="pagination-list">
+      {% for i in range(results|length) %}
+      <li>
+        <button id="page_link_{{ i }}" class="pagination-link {% if i==0 %}is-current{% endif %}" onclick="update({{ i }})">{{ i+1 }}</button>
+      </li>
+      {% endfor %}
+    </ul>
+    <button id="page_next" class="pagination-next" onclick="update_next()" {% if results|length == 1 %}disabled{% endif %}>&gt;</button>
+  </nav>
+</div>
+<div class="container" id="table_container">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Choice</th>
+        {% for i in range(results|length) %}
+        <th>Round {{ i }} votes</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    {% for i in choice_dict.keys() %}
+    <tr>
+      <th>{{ choice_dict[i] }}</th>
+      {% for result in results %}
+      <td>{{ result[i|string] }}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+    <tfoot>
+      <th><span class="is-italic has-text-weight-light">Majority threshold</span></th>
+      {% for result in results %}
+      <td>{{ result.values()|sum / 2 }}</td>
+      {% endfor %}
+    </tfoot>
+  </table>
+</div>
+<div class="container" id="table_container_percent">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Choice</th>
+        {% for i in range(results|length) %}
+        <th>Round {{ i }} vote share</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    {% for i in choice_dict.keys() %}
+    <tr>
+      <th>{{ choice_dict[i] }}</th>
+      {% for result in results %}
+      <td>{{ (100*result[i|string]/(result.values()|map("int")|sum))|round(2) }}%</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+  var results = {{ results|tojson|safe }};
+  var choices = {{ choice_dict|tojson|safe }};
+  
+  var current = 0;
+  
+  var primary_color = getComputedStyle(document.querySelector(".is-info")).backgroundColor;
+  
+  var ctx = document.getElementById("graph").getContext("2d");
+  
+  if (Math.max(...Object.values(results[results.length-1]))+5 < 10) {
+    var x_min = Math.max(...Object.values(results[results.length-1]))+5;
+  } else {
+    var x_min = Math.ceil((Math.max(...Object.values(results[results.length-1]))+5)/10)*10;
+  }
+  
+  var chart = new Chart(ctx, {
+    type: "horizontalBar",
+    data: {
+      labels: Object.values(choices),
+      datasets: [{
+        label: "Votes",
+        data: Object.keys(choices).map(x => results[0][x]),
+        backgroundColor: primary_color
+      }]
+    },
+    options: {
+      maintainAspectRatio: false,
+      responsive: true,
+      legend: {
+        display: false
+      },
+      scales: {
+        yAxes: [{
+          gridLines: {
+            display: false
+          }
+        }],
+        xAxes: [{
+          ticks: {
+            beginAtZero: true,
+            max: x_min
+          }
+        }]
+      },
+      tooltips: {
+        callbacks: {
+          afterBody: function(tooltipItem, data) {
+            var item = tooltipItem[0];
+            var dataset = data.datasets[item.datasetIndex].data;
+            var vote_sum = dataset.reduce((a, b) => a+b);
+            var votes = dataset[item.index];
+            return (100*votes/vote_sum).toFixed(2) + "%";
+          }
+        }
+      },
+      annotation: {
+        annotations: [{
+          type: "line",
+          mode: "vertical",
+          scaleID: "x-axis-0",
+          value: Object.values(results[0]).reduce((a, b) => a+b)/2,
+          borderColor: "black",
+          borderWidth: 2,
+          label: {
+            content: "Majority threshold",
+            enabled: true,
+            position: "top"
+          }
+        }]
+      }
+    }
+  });
+          
+  function update(i) {
+    chart.data.datasets[0].data = Object.keys(choices).map(x => results[i][x]);
+    chart.options.annotation.annotations[0].value = Object.values(results[i]).reduce((a, b) => a+b)/2
+    chart.update();
+    document.getElementById("page_link_" + current).className = "pagination-link";
+    current = i;
+    document.getElementById("page_link_" + current).className = "pagination-link is-current";
+    if (current === 0) {
+      document.getElementById("page_prev").disabled = true;
+    } else {
+      document.getElementById("page_prev").disabled = false;
+    }
+    if (current === results.length-1) {
+      document.getElementById("page_next").disabled = true;
+    } else {
+      document.getElementById("page_next").disabled = false;
+    }
+  };
+  
+  function update_next() {
+    update(current+1);
+  }
+  
+  function update_prev() {
+    update(current-1);
+  }
+</script>
+{% endblock %}

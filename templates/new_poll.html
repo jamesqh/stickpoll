@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% set active_page = "new_poll" %}
+
+{% from "_formhelpers.html" import render_field %}
+
+{% block content %}
+<div class="container">
+  <form method=post>
+    <dl>
+      <div class="field">
+        <label class="label">{{ form.title.label }} <span class="tooltip" data-tooltip="A short, descriptive title for your poll">[?]</span></label>
+        <div class="control">
+          {{ form.title(class="input", placeholder="A short, descriptive title for your poll", autofocus="autofocus") }}
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">{{ form.question.label }} <span class="tooltip" data-tooltip="The question you want to ask">[?]</span></label>
+        <div class="control">
+          {{ form.question(class="input", placeholder="The question you want to ask") }}
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Choices <span class="tooltip is-tooltip-multiline" data-tooltip="Possible choices to offer respondents, one per text box. Press button to add more boxes">[?]</span></label>
+        <div class="control">
+          <button class="button" id="new_choice" type="button" onclick="addChoice()">Add choice</button>
+          <div hidden id="choices_warning" class="notification is-warning">
+            Choice limit reached.
+          </div>
+        </div>
+        <div id="choices_div">
+        {% for field in form.choices %}
+          <div class="control">
+            {{ field(class="input", placeholder="One of the choices you want to offer respondents") }}
+          </div>                    
+        {% endfor %}
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">{{ form.close_in.label }} <span class="tooltip" data-tooltip="Poll will be closed after this amount of time">[?]</span></label>
+        <div class="control">
+          {{ form.close_in(class="is-checkradio") }}
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">{{ form.password.label }} <span class="tooltip is-tooltip-multiline" data-tooltip="Password to delete poll (optional - if left blank a random password will be generated)">[?]</span></label>
+        <div class="control">
+          {{ form.password(class="input", placeholder="Password to delete poll (optional)") }}
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">{{ form.password_confirm.label }} <span class="tooltip" data-tooltip="Confirm password">[?]</span></label>
+        <div class="control">
+          {{ form.password_confirm(class="input", placeholder="Confirm password") }}
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">{{ form.email.label }} <span class="tooltip is-tooltip-multiline" data-tooltip="Email to send deletion link to (optional - with no email recorded the only way to delete a poll is its password)">[?]</span></label>
+        <div class="control">
+          {{ form.email(class="input", placeholder="Email to send deletion link to (optional)") }}
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">{{ form.email_confirm.label }} <span class="tooltip" data-tooltip="Confirm email">[?]</span></label>
+        <div class="control">
+          {{ form.email_confirm(class="input", placeholder="Confirm email") }}
+        </div>
+      </div>
+      <div class="field">
+        {{ form.early_results(class="is-checkradio") }}
+        {{ form.early_results.label }}
+        <span class="tooltip is-tooltip-multiline" data-tooltip="If checked, a periodically updated preview of the poll results will be available. Likely to distort voting patterns">[?]</span>
+      </div>
+      {% if form.captcha is defined %}
+      <div class="field">
+        {{ form.captcha(class="is-checkradio") }}
+        {{ form.captcha.label }}
+      </div>
+      {% endif %}
+    </dl>
+    {{ form.csrf_token }}
+    <p><input class="button" type=submit value="Submit">
+  </form>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+function addChoice() {
+  var choices = document.getElementById("choices_div").children;
+  var last_choice = choices[choices.length-1].children[0];
+  var last_choice_num = parseInt(last_choice.id.split("-")[1]);
+  if (last_choice_num === 12) {
+    document.getElementById("new_choice").hidden = true;
+    document.getElementById("choices_warning").hidden = false;
+    return;
+  };
+  var new_choice = document.createElement("input");
+  new_choice.setAttribute("id", last_choice.id.split("-")[0] + "-" + (last_choice_num+1));
+  new_choice.setAttribute("name", last_choice.name.split("-")[0] + "-" + (last_choice_num+1));
+  new_choice.setAttribute("type", last_choice.type);
+  new_choice.setAttribute("class", "input")
+  new_choice.setAttribute("placeholder", "One of the choices you want to offer respondents")
+  var p = document.createElement("p");
+  p.appendChild(new_choice);
+  document.getElementById("choices_div").appendChild(p);
+};
+</script>
+{% endblock %}

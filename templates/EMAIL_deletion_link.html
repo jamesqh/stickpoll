@@ -1,0 +1,9 @@
+<html>
+<body>
+<p>Somebody requested a deletion link for a <a href={{ url_for("home") }}>Stickpoll</a> created with this email address.</p>
+<p>The poll, titled "{{ title }}", can be found <a href={{ url_for("polls.get_poll", poll_id=poll_id) }}>here</a>.</p>
+<p>To delete it, click on or manually go to the following link:
+<a href={{ url_for("polls.send_delete_token", poll_id=poll_id, token=token, _external=True) }}>{{ url_for("polls.send_delete_token", poll_id=poll_id, token=token, _external=True) }}</a></p>
+<p>If you didn't request deletion or changed your mind, ignore this email.</p>
+</body>
+</html>

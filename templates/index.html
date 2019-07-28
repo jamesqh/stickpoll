@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% set active_page = "home" %}
+
+{% block content %}
+<div class="columns is-centered">
+  <div class="column is-half">
+    <h4 class="title is-4 has-text-black">What?</h2>
+    <p>Nobody should use FPTP for anything that matters, or even that doesn't matter. Create and vote on polls using an instant runoff voting system.</p>
+    <div class="is-divider"></div>
+    <!-- <div class="columns is-centered"> -->
+        <!-- <div class="column is-half"><div class="level"><div class="level-item"> -->
+            <!-- <a href="{{ url_for('polls.new_poll') }}" class="button is-info is-medium is-uppercase has-text-weight-bold"><span>Ask something</span><span class="icon"><i class="fas fa-poll-h"></i></a> -->
+        <!-- </div></div></div> -->
+        <!-- <div class="column is-half"><div class="level"><div class="level-item"> -->
+            <!-- <a href="{{ url_for('about') }}" class="button is-warning is-medium is-uppercase has-text-weight-bold"><span>Read more</span><span class="icon"><i class="fas fa-poll-h"></i></a> -->
+        <!-- </div></div></div> -->
+    <!-- </div> -->
+    <div class="columns is-centered">
+        <div class="column is-half">
+            <a href="{{ url_for('polls.new_poll') }}" class="button is-info is-medium is-uppercase has-text-weight-bold"><span>Ask something</span><span class="icon"><i class="fas fa-poll-h"></i></a>
+        </div>
+        <div class="column is-half">
+            <a href="{{ url_for('about') }}" class="button is-warning is-medium is-uppercase has-text-weight-bold"><span>Read more</span><span class="icon"><i class="fas fa-poll-h"></i></a>
+        </div>
+    </div>
+  </div>
+  <div class="column is-half">
+    <h4 class="title is-4 has-text-black">Why?</h2>
+    <p>First past the post is a system that promotes tactical voting, punishes third parties, maximises wasted votes, and boosts the effectiveness of gerrymandering.
+    It's one of the worst ways to select candidates for anything.</p>
+    <ul>
+      <li><a class="has-text-link" href="#">Wikipedia probably</a></li>
+      <li><a class="has-text-link" href="#">Electoral reform society</a></li>
+      <li><a class="has-text-link" href="#">A youtube video by that guy</a></li>
+    </ul>
+  </div>
+</div>
+<div class="is-divider"></div>
+<div class="container">
+  <p>Recently opened polls you can vote on:</p>
+  <div class="list">
+  {% for row in open_polls %}
+    <a class="list-item" href="{{ url_for('polls.get_poll', poll_id=row['id']) }}">{{ row["title"] }}</a>
+  {% endfor %}
+  </div>
+</div>
+<div class="is-divider"></div>
+<div class="container">
+  <p>Recently closed polls you can view the results for:</p>
+  <div class="list">
+  {% for row in closed_polls %}
+    <a class="list-item" href="{{ url_for('polls.get_poll', poll_id=row['id']) }}">{{ row["title"] }}</a>
+  {% endfor %}
+  </div>
+</div>
+{% endblock %}

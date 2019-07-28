@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Stickpoll</title>
+  <meta name="viewport" content="width-device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='custom_bulma.css') }}">
+  <!-- <link rel="stylesheet" href="{{ url_for('static', filename='bulma.css') }}"> -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='tabs.css') }}">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+  <!-- <link rel="stylesheet" href="{{ url_for('static', filename='fontawesome.css') }}"> -->
+  {% block head %}
+  {% endblock %}
+</head>
+<body>
+  <section class="hero is-info">
+    <div class="hero-body">
+      <div class="container">
+        <a href="{{ url_for('home') }}">
+          <div class="level">
+            <div class="level-left">
+              <div class="level-item">
+                <span class="icon is-large"><i class="has-text-white fas fa-home fa-2x"></i></span>
+                <span><h1 class="title">Stickpoll</h1></span>
+              </div>
+            </div>
+          </div>
+        </a>
+        <h2 class="subtitle">Straw polls with preferential voting</h2>
+      </div>
+    </div>
+    <div class="tabs is-boxed is-centered main-menu">
+      <ul>
+        <li class="{% if active_page == 'home' %}is-active{% endif %}">
+          <a href="{{ url_for('home') }}">
+            <span class="icon is-small"><i class="fas fa-home"></i></span>
+            <span>Home</span>
+          </a>
+        </li>
+        <li class="{% if active_page == 'new_poll' %}is-active{% endif %}">
+          <a href="{{ url_for('polls.new_poll') }}">
+            <span class="icon is-small"><i class="far fa-file"></i></span>
+            <span>New poll</span>
+          </a>
+        </li>
+        <li class="{% if active_page == 'search' %}is-active{% endif %}">
+          <a href="{{ url_for('search.search_page') }}">
+            <span class="icon is-small"><i class="fas fa-search"></i></span>
+            <span>Search</span>
+          </a>
+        </li>
+        <li class="{% if active_page == 'about' %}is-active{% endif %}">
+          <a href="{{ url_for('about') }}">
+            <span class="icon is-small"><i class="fas fa-question-circle"></i></span>
+            <span>About</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  <div class="tab-content">
+  {% if get_flashed_messages() %}
+  <div class="container">
+    <div class="section">
+      {% for message in get_flashed_messages() %}
+      <div class="notification is-danger">{{ message }}</div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+    <div class="tab-pane is-active">
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+  {% block script %}{% endblock %}
+  </section>
+</body>
+</html>

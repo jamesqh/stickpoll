@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% from "_formhelpers.html" import render_field %}
+
+{% block content %}
+<div class="container">
+    <p>This will delete the poll "{{ title }}" asking:</p>
+    <p>{{ question }}</p>
+    <p>If you're sure you want to continue, enter the poll's deletion password below and submit.</p>
+    <form method=post>
+        {{ render_field(form.password) }}
+        <p>
+        {{ form.csrf_token }}
+        <input type=submit value="Submit">
+    </form>
+    {% if email %}
+        <p>Alternatively, click <a href={{ url_for("polls.send_deletion_email", poll_id=poll_id) }}>here</a> to send a deletion link to the email given when this poll was created.</p>
+    {% endif %}
+</div>
+{% endblock %}

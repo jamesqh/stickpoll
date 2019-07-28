@@ -1,0 +1,45 @@
+.colour_box { height: 40px; width: 40px; margin: 5px; }
+.border_box { height: 50px; width: 50px; }
+.top_border { border-top: 2px solid black; }
+.bottom_border { border-bottom: 2px solid black; }
+.left_border { border-left: 2px solid black; }
+.right_border { border-right: 2px solid black; }
+.red { background-color: rgb(255, 0, 0); }
+.green0 { background-color: rgb(40, 215, 40); animation: linear 5000ms infinite anim0}
+@keyframes anim0 { 0% { background-color: rgb(40, 215, 40); } 44% { background-color: rgb(0, 255, 0); } 100% {background-color: rgb(0, 255, 0); } }
+.green1 { background-color: rgb(50, 205, 50); animation: linear 5000ms infinite anim1}
+@keyframes anim1 { 0% { background-color: rgb(50, 205, 50); } 55% { background-color: rgb(0, 255, 0); } 100% {background-color: rgb(0, 255, 0); } }
+.green2 { background-color: rgb(60, 195, 60); animation: linear 5000ms infinite anim2}
+@keyframes anim2 { 0% { background-color: rgb(60, 195, 60); } 66% { background-color: rgb(0, 255, 0); } 100% {background-color: rgb(0, 255, 0); } }
+.green3 { background-color: rgb(85, 170, 85); animation: linear 5000ms infinite anim3}
+@keyframes anim3 { 0% { background-color: rgb(85, 170, 85); } 94% { background-color: rgb(0, 255, 0); } 100% {background-color: rgb(0, 255, 0); } }
+.green4 { background-color: rgb(10, 245, 10); animation: linear 5000ms infinite anim4}
+@keyframes anim4 { 0% { background-color: rgb(10, 245, 10); } 11% { background-color: rgb(0, 255, 0); } 100% {background-color: rgb(0, 255, 0); } }
+.green5 { background-color: rgb(65, 190, 65); animation: linear 5000ms infinite anim5}
+@keyframes anim5 { 0% { background-color: rgb(65, 190, 65); } 72% { background-color: rgb(0, 255, 0); } 100% {background-color: rgb(0, 255, 0); } }
+.green6 { background-color: rgb(25, 230, 25); animation: linear 5000ms infinite anim6}
+@keyframes anim6 { 0% { background-color: rgb(25, 230, 25); } 27% { background-color: rgb(0, 255, 0); } 100% {background-color: rgb(0, 255, 0); } }
+.green7 { background-color: rgb(30, 225, 30); animation: linear 5000ms infinite anim7}
+@keyframes anim7 { 0% { background-color: rgb(30, 225, 30); } 33% { background-color: rgb(0, 255, 0); } 100% {background-color: rgb(0, 255, 0); } }
+.green8 { background-color: rgb(20, 235, 20); animation: linear 5000ms infinite anim8}
+@keyframes anim8 { 0% { background-color: rgb(20, 235, 20); } 22% { background-color: rgb(0, 255, 0); } 100% {background-color: rgb(0, 255, 0); } }
+.green9 { background-color: rgb(15, 240, 15); animation: linear 5000ms infinite anim9}
+@keyframes anim9 { 0% { background-color: rgb(15, 240, 15); } 16% { background-color: rgb(0, 255, 0); } 100% {background-color: rgb(0, 255, 0); } }
+.green10 { background-color: rgb(35, 220, 35); animation: linear 5000ms infinite anim10}
+@keyframes anim10 { 0% { background-color: rgb(35, 220, 35); } 38% { background-color: rgb(0, 255, 0); } 100% {background-color: rgb(0, 255, 0); } }
+.green11 { background-color: rgb(5, 250, 5); animation: linear 5000ms infinite anim11}
+@keyframes anim11 { 0% { background-color: rgb(5, 250, 5); } 5% { background-color: rgb(0, 255, 0); } 100% {background-color: rgb(0, 255, 0); } }
+.green12 { background-color: rgb(55, 200, 55); animation: linear 5000ms infinite anim12}
+@keyframes anim12 { 0% { background-color: rgb(55, 200, 55); } 61% { background-color: rgb(0, 255, 0); } 100% {background-color: rgb(0, 255, 0); } }
+.green13 { background-color: rgb(75, 180, 75); animation: linear 5000ms infinite anim13}
+@keyframes anim13 { 0% { background-color: rgb(75, 180, 75); } 83% { background-color: rgb(0, 255, 0); } 100% {background-color: rgb(0, 255, 0); } }
+.green14 { background-color: rgb(80, 175, 80); animation: linear 5000ms infinite anim14}
+@keyframes anim14 { 0% { background-color: rgb(80, 175, 80); } 88% { background-color: rgb(0, 255, 0); } 100% {background-color: rgb(0, 255, 0); } }
+.green15 { background-color: rgb(70, 185, 70); animation: linear 5000ms infinite anim15}
+@keyframes anim15 { 0% { background-color: rgb(70, 185, 70); } 77% { background-color: rgb(0, 255, 0); } 100% {background-color: rgb(0, 255, 0); } }
+.green16 { background-color: rgb(0, 255, 0); animation: linear 5000ms infinite anim16}
+@keyframes anim16 { 0% { background-color: rgb(0, 255, 0); } 0% { background-color: rgb(0, 255, 0); } 100% {background-color: rgb(0, 255, 0); } }
+.green17 { background-color: rgb(45, 210, 45); animation: linear 5000ms infinite anim17}
+@keyframes anim17 { 0% { background-color: rgb(45, 210, 45); } 50% { background-color: rgb(0, 255, 0); } 100% {background-color: rgb(0, 255, 0); } }
+.no_anim { animation: none; }
+.bright_green { background-color: rgb(0, 255, 0); }

@@ -1,0 +1,19 @@
+{% macro render_field(field) %}
+  <div class="field">
+    {% if "class" in kwargs and kwargs["class"] == "radio" %}
+    <label class="radio">{{ field.label }}</label>
+    {% else %}
+    <label class="label">{{ field.label }}</label>
+    {% endif %}
+    <div class="control">
+      {{ field(**kwargs)|safe }}
+    </div>
+    {% if field.errors %}
+      <ul class=errors>
+      {% for error in field.errors %}
+        <li>{{ error }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+{% endmacro %}

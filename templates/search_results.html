@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% set active_page = "search" %}
+
+{% block content %}
+
+<div class="container">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Result</th>
+        <th>Open</th>
+        <th>Votes</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for row in search_results %}
+      <tr>
+        <td>
+          <a href="{{ url_for('polls.get_poll', poll_id=row['rowid']) }}">{{ row["snippet"]|safe }}</a>
+        </td>
+        <td>
+        {% if row["open"] %}
+          <span class="tag is-info">open</span>
+        {% else %}
+          <span class="tag is-warning">closed</span>
+        {% endif %}
+        </td>
+        <td>
+          1564564253
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% set active_page = 'about' %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='boxes.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="subtitle has-text-info">What's all this about?</h2>
+    <div class="content">
+        <p>
+            <b>Stickpoll</b> is a site that lets you create and participate in polls using an instant runoff voting system. 
+            Presented with a question and a list of options, users can construct a ballot listing their choices by order of preference. 
+            When the results are calculated, the least preferred options are eliminated and their votes redistributed according to voters' preferences, the process continuing in rounds until a majority winner emerges.
+        </p>
+        <div class="columns">
+            <div class="column">
+                <article class="message is-primary">
+                    <div class="message-header">Read more</div>
+                    <div class="message-body">
+                        <ul>
+                            <li><a class="has-text-link" href="#">Link 1</a></li>
+                            <li><a class="has-text-link" href="#">Link 2</a></li>
+                            <li><a class="has-text-link" href="#">Link 3</a></li>
+                        </ul>
+                    </div>
+                </article>
+            </div>
+            <div class="is-divider-vertical"></div>
+            <div class="column">
+                <article class="message is-primary">
+                    <div class="message-header">Watch videos</div>
+                    <div class="message-body">
+                        <ul>
+                            <li><a class="has-text-link" href="#">Video 1</a></li>
+                            <li><a class="has-text-link" href="#">Video 2</a></li>
+                            <li><a class="has-text-link" href="#">Video 3</a></li>
+                        </ul>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+    <div class="is-divider"></div>
+    <h2 class="subtitle has-text-info">But what's the point?</h2>
+    <div class="content">
+        <p>
+            If you're like most people, your idea of voting on things is probably pretty simple. There's an array of options, everyone who has a vote chooses one of them, and the option with the most votes wins.
+            There are other ways to do it, but this is the most obvious and by far the most common. It's called <b>First Past The Post</b>. When you're choosing between two options, it's the best solution.
+            But introduce a third, and things can get problematic.
+        </p>
+        <p>
+            The easiest way to see how is by constructing a pathological example. Imagine 20 people are polled for their favourite colour. 2 of them like red, and 18 like green. But they like <i>slightly different shades</i>
+            of green.
+        </p>
+        <div class="container"><img src="{{ url_for('static', filename='redwins.png') }}"/></div>
+        <p>
+            Red wins with two votes, in spite of being a tiny minority. The system doesn't care how similar all the greens are, each only has one vote and in the end none of them count.
+        </p>
+        <p>
+            If, instead of simply asking people to pick their one favourite colour, we ask them to <i>rank</i> the colours, then we get a lot more information about what they like.
+            Assuming each of the green voters would prefer any green over any red, their ballots become a list of greens in the order they prefer. We can now count the votes in multiple rounds,
+            at each stage eliminating the least popular colour and redistributing the votes accordingly.
+        </p>
+        <div class="container">
+            <div id="row1animated" style="display: flex; flex-direction: row;"><div class="border_box"><div class="red colour_box"></div></div><div class="border_box"><div class="red colour_box"></div></div><div class="border_box"><div class="green0 colour_box"></div></div><div class="border_box"><div class="green1 colour_box"></div></div><div class="border_box"><div class="green2 colour_box"></div></div><div class="border_box"><div class="green3 colour_box"></div></div><div class="border_box"><div class="green4 colour_box"></div></div><div class="border_box"><div class="green5 colour_box"></div></div><div class="border_box"><div class="green6 colour_box"></div></div><div class="border_box"><div class="green7 colour_box"></div></div></div>
+            <div id="row2animated" style="display: flex; flex-direction: row;"><div class="border_box"><div class="green8 colour_box"></div></div><div class="border_box"><div class="green9 colour_box"></div></div><div class="border_box"><div class="green10 colour_box"></div></div><div class="border_box"><div class="green11 colour_box"></div></div><div class="border_box"><div class="green12 colour_box"></div></div><div class="border_box"><div class="green13 colour_box"></div></div><div class="border_box"><div class="green14 colour_box"></div></div><div class="border_box"><div class="green15 colour_box"></div></div><div class="border_box"><div class="green16 colour_box"></div></div><div class="border_box"><div class="green17 colour_box"></div></div></div>
+        </div>
+        <p>
+            One by one, mint, mantis, lime, jungle, laurel, artichoke, teal, olive, asparagus are eliminated. Their votes go to greens that their voters selected as their next most preferred.
+            And eventually - although in a real case we'd stop once one shade reached a majority - all the green voters settle on one choice and it wins by 18 votes to 2. A much fairer result.
+        </p>
+        <div class="container"><img src="{{ url_for('static', filename='greenwins.png') }}"/></div>
+        <p>
+            Being more technical, there are several mathematically defined criteria that can be used to evaluate a voting system. Some important ones that FPTP fails:
+            <ul>
+                <li><b>Condorcet winner</b>: <q>if a candidate would <b>win</b> a head-to-head competition against every other candidate, then that candidate must win the overall election</q>.</li>
+                <li><b>Condorcet loser</b>: <q>if a candidate would <b>lose</b> a head-to-head competition against every other candidate, then that candidate must not win the overall election</q>.</li>
+                <li><b>Independence of irrelevant alternatives</b>: <q>the election outcome remains the same even if a candidate who cannot win decides to run</q>.</li>
+                <li><b>Independence of clones</b>: <q>the election outcome remains the same even if an identical candidate who is equally-preferred decides to run</q>.</li>
+            </ul>
+        </p>
+        <p>
+            These failures, and the degree to which FPTP exhibits them, manifest in a number of deleterious effects. FPTP hugely incentivises <b>tactical voting</b>, where the optimal strategy for a rational voter 
+            is not to simply select her preferred option, but to attempt to predict which two candidates will get the most votes and select her preferred option only from that pair.
+        </p>
+        <p>
+            The alternative system used by Stickpoll is called <b>Instant Runoff Voting</b>. Voters rank the available choices in order of their preference. Vote counting proceeds in a series of rounds. In the first round, the votes that list each candidate as their first preference are tallied, and if one has attained a majority they are the winner and voting ends. Otherwise, the candidate who garnered the lowest number of first-preference votes is eliminated. Ballots that listed that candidate as their first preference will now be counted as votes for the second preference candidates on those ballots. The votes are again counted, and the process continues until a majority is achieved.
+        </p>
+        <p>
+            IRV is not perfect. It's more difficult to explain, and more complicated to implement. When used to elect single member constituencies, it does not eliminate issues inherent to a system where only one candidate can win 
+            and votes for all others go unrepresented. However, it always satisfies the <b>Condorcet loser</b> and <b>Independence of clones</b> criteria, and scenarios where it fails the <b>Condorcet winner</b> and 
+            <b>Independence of irrelevant alternatives</b> criteria are far more rare than under FPTP. It is theoretically susceptible to tactical voting 
+            (per <a class="has-text-link" href="https://en.wikipedia.org/wiki/Gibbard%E2%80%93Satterthwaite_theorem">Gibbard and Satterthwaite</a>), but in practice the amount of information a voter would need to come up with an optimal strategy is 
+            very difficult to come by. It is seldom that voting tactically will make the outcome more likely to match your preferences, difficult to predict whether at any given election this will be the case, and almost 
+            impossible to decide what the optimum ballot would actually be. Contrast to FPTP, where, unless your most preferred choice is one of the top two candidates, it's almost guaranteed that voting tactically will help, 
+            easy to predict whether that's so, and obvious which candidate you should vote for instead.
+        </p>
+    </div>
+    <div class="is-divider"></div>
+    <h2 class="subtitle has-text-info">What if there's multiple worst candidates?</h2>
+    <div class="content">
+        <p>
+            Good question. In each round of voting, the candidate with the least number of first-preference votes is eliminated. It's possible for there to be more than one candidate with the least number. 
+            Often, the number of votes that those candidates have altogether is less than the number of votes that the next best candidate has received, and they can fairly be eliminated all at once because none of them can win. 
+            If not, it's a situation somewhat equivalent to a tie in FPTP, and a tie-breaking rule has to be employed. Stickpoll selects one randomly, like most jurisdictions will flip a coin.
+        </p>
+    </div>
+    <div class="is-divider"></div>
+    <h2 class="subtitle has-text-info">Proportional representation is better.</h2>
+    <div class="content">
+        <p>
+            Proportional representation is absolutely, without doubt, the fairest way to approach a particular problem: constructing a representative sample of the voters. If the voters are split evenly between red, green, 
+            and blue, PR will elect a parliament split evenly between red, green, and blue.
+        </p>
+        <p>
+            However, this doesn't help much in answering a question where only <i>one</i> outcome can be enacted. A parliament of representatives can, theoretically, compromise. But if you wanted to ask voters directly 
+            what the country's official favourite colour should be, faithfully representing each faction as 33.33% doesn't get you any closer to a decision. Runoff voting does. This class of problems is ubiquitous.
+        </p>
+        <p>
+            Voting methods aren't limited in usefulness to electoral systems, either. Consider the absurd exercise in <a href="https://en.wikipedia.org/wiki/Parliamentary_votes_on_Brexit#First_Round_of_Indicative_Votes_(27_March_2019)" class="has-text-link">"Indicative Votes"</a> undertaken by the UK Parliament on the 27th of March, 2019. Voting separately in eight 
+            straight yes/no questions, the MPs established that they didn't want anything. In a situation with eight different options covering every possible outcome from No Deal to Revocation, Parliament could decide only that none of these were acceptable, accomplishing nothing. This was a Parliament elected by FPTP, but it could easily have happened under PR as well. The problem 
+            here was that the system used to answer the question was useless because they were allowed to simply say "no" to everything. Had they had been forced to rank these options in their preferred order, the paralysis might have come to an end.
+        </p>
+    </div>
+    <div class="is-divider"></div>
+    <h2 class="subtitle has-text-info">You should be using the Tideman alternative method!</h2>
+    <div class="content">
+        <p>
+            Yes, it's very smart. But the idea of this site is to showcase a method that could be used for actual elections. Volunteers are certainly Turing complete, and you could probably get them to implement one of the strongly-connected graph algorithms if you tried hard enough, but realistically it would be done with a computer.
+            And <a class="has-text-link" href="https://xkcd.com/2030/">computers should not be used in elections.</a>
+        </p>
+    </div>
+    <div class="is-divider"></div>
+    <h2 class="subtitle has-text-info">"Stickpoll"?</h2>
+    <div class="content">
+        <p>
+            <blockquote>A straw poll or straw vote is an ad-hoc or unofficial vote. It is used to show the popular opinion on a certain matter, and can be used to help politicians know the majority opinion and help them decide what to say in order to gain votes.</blockquote>
+            A popular and very useful website by that name also exists.
+        </p>
+        <p>
+            In picking this one, I thought of the story of the three little pigs, who build houses of straw and of sticks and of bricks. My hope is that this stick house, though not much more substantial than straw, 
+            helps people get used to the idea that their government could be building houses out of bricks.
+        </p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% set active_page = "search" %}
+
+{% from "_formhelpers.html" import render_field %}
+
+{% block content %}
+<div class="container">
+  <form method="post">
+    <div class="field">
+      <label class="label">{{ form.search_string.label }}</label>
+      <div class="control">
+        {{ form.search_string(class="input", placeholder="What to search for", autofocus="autofocus") }}
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">{{ form.search_columns.label }}</label>
+      <div class="control">
+        <ul>
+          {{ form.search_columns(class="is-checkradio") }}
+        </ul>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">{{ form.search_open.label }}</label>
+      <div class="control">
+        <ul>
+          {{ form.search_open(class="is-checkradio") }}
+        </ul>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">{{ form.order_by.label }}</label>
+      <div class="control">
+        <ul>
+          {{ form.order_by(class="is-checkradio") }}
+        </ul>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">{{ form.order_dir.label }}</label>
+      <div class="control">
+        <ul>
+          {{ form.order_dir(class="is-checkradio") }}
+        </ul>
+      </div>
+    </div>
+    {{ form.csrf_token }}
+    <p><input class="button" type=submit value="Search">
+  </form>
+</div>
+{% endblock %}

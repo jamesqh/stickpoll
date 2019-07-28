@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% from "_formhelpers.html" import render_field %}
+
+{% block head %}
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.2/vue.js"></script>-->
+<script src="{{ url_for('static', filename='vue.min.js') }}"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
+<!-- CDNJS :: Sortable (https://cdnjs.com/) -->
+<!--<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.7.0/Sortable.js"></script>-->
+<script src="{{ url_for('static', filename='sortable.min.js') }}"></script>
+<!-- CDNJS :: Vue.Draggable (https://cdnjs.com/) -->
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.17.0/vuedraggable.js"></script>-->
+<script src="{{ url_for('static', filename='vuedraggable.min.js') }}"></script>
+<style>
+.dragArea {
+  min-height: 30px;
+  background-color: WhiteSmoke;
+  border-style: solid;
+  padding-bottom: 15px;
+}
+.choiceDiv {
+  min-height: 20px;
+  border-style: solid;
+  margin: 5px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <p>Poll {{ title }}</p>
+  <p>{{ question }}</p>
+  <p>Choices are:</p>
+  {% for i in choices.keys() %}
+    {{ i }}: {{ choices[i] }}<br>
+  {% endfor %}
+  <p>Poll closes at: {{ close_date }}</p>
+  <form method="post">
+    <div id="hide_if_javascript" style="display:block">
+    List your preferred choice numbers in order, separated by semicolons:<br>
+    {{ form.ballot_json(id="ballot_json_field") }}
+<!--    <input type="text" id="ballot_json_field" name="ballot_json" size=200><br>-->
+    </div>
+    {% if form.captcha is defined %}
+    {{ render_field(form.captcha) }}
+    {% endif %}
+    <input class="button" type="submit" value="Submit">
+  </form>
+  <p>
+  <div id="ballot_readout"></div>
+  <div class="level">
+    <div class="level-left">
+      {% if early_results %}
+      <div class="level-item">
+        <a class="button is-link" href={{ url_for("polls.get_results", poll_id=poll_id) }}>Results</a>
+      </div>
+      {% endif %}
+      <div class="level-item">
+        <a class="button is-link" href={{ url_for("polls.delete_poll", poll_id=poll_id) }}>Delete poll</a>
+      </div>
+    </div>
+  </div>
+  <div id="vue_ballot">
+    <h2 class="subtitle">Your ballot</h2>
+    <div class="columns is-vcentered">
+    <div class="column is-8">
+    <draggable v-model="selected_choices" class="dragArea" :options="{group:'all_choices', draggable: '.choiceDiv'}" @sort="updateBallotField">
+      <div v-for="element in selected_choices" class="choiceDiv columns is-vcentered" v-on:dblclick="remove(element.num)">
+        <div class="column is-11">[[ element.name ]]</div>
+        <div class="column is-1"><div class="delete" @click="remove(element.num)"></div></div>
+      </div>
+      <div v-if="selected_choices.length === 0">Drag your choices here to add them to your ballot</div>
+    </draggable>
+    <div class="column is-4"></div>
+    </div>
+    </div>
+    <button class="button" slot="footer" @click="clearBallot">Clear ballot</button>
+    <h2 class="subtitle">Candidates</h2>
+    <div class="columns is-vcentered">
+    <div class="column is-8">
+    <draggable v-model="unselected_choices" class="dragArea" :options="{group:'all_choices', draggable: '.choiceDiv'}">
+      <div v-for="element in unselected_choices" class="choiceDiv columns is-vcentered" v-on:dblclick="add(element.num)">
+        <div class="column is-8">[[element.name]]</div>
+      </div>
+      <div>Drag choices here to remove them from your ballot</div>
+    </draggable>
+    </div>
+    <div class="column is-4"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+document.getElementById("hide_if_javascript").style = "display:none";
+var vm = new Vue({
+  delimiters: ["[[", "]]"],
+  el: "#vue_ballot",
+  data: {
+    selected_choices: [],
+    unselected_choices: {{ choices_json|tojson|safe }}
+  },
+  methods: {
+    add: function(element_num) {
+      var choice_index = this.$data.unselected_choices.map(x => x.num).indexOf(element_num);
+      var choice = this.$data.unselected_choices[choice_index];
+      this.$data.selected_choices.push(choice);
+      this.$data.unselected_choices.splice(choice_index, 1);
+      this.updateBallotField();
+    },
+    remove: function(element_num) {
+      var choice_index = this.$data.selected_choices.map(x => x.num).indexOf(element_num);
+      var choice = this.$data.selected_choices[choice_index];
+      this.$data.unselected_choices.push(choice);
+      this.$data.selected_choices.splice(choice_index, 1);
+      this.updateBallotField();
+    },
+    clearBallot: function() {
+      this.$data.unselected_choices = this.$data.unselected_choices.concat(this.$data.selected_choices);
+      this.$data.selected_choices = [];
+      this.updateBallotField();
+    },
+    updateBallotField: function(evt) {
+      document.getElementById("ballot_json_field").value = this.$data.selected_choices.map(x => x.num).join(";");
+      document.getElementById("ballot_readout").innerText = this.$data.selected_choices.map(x => x.name).join(";");
+    }
+  }
+})
+</script>
+{% endblock %}
