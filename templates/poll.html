@@ -43,7 +43,7 @@
 <!--    <input type="text" id="ballot_json_field" name="ballot_json" size=200><br>-->
     </div>
     {% if form.captcha is defined %}
-    {{ render_field(form.captcha) }}
+    {{ form.captcha() }}
     {% endif %}
     <input class="button" type="submit" value="Submit">
   </form>

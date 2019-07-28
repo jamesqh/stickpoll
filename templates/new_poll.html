@@ -71,10 +71,7 @@
         <span class="tooltip is-tooltip-multiline" data-tooltip="If checked, a periodically updated preview of the poll results will be available. Likely to distort voting patterns">[?]</span>
       </div>
       {% if form.captcha is defined %}
-      <div class="field">
-        {{ form.captcha(class="is-checkradio") }}
-        {{ form.captcha.label }}
-      </div>
+      {{ form.captcha() }}
       {% endif %}
     </dl>
     {{ form.csrf_token }}
