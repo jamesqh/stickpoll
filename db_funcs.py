@@ -126,9 +126,11 @@ def get_results(poll_id):
     return query_db(statement, (poll_id,), one=True)
 
 def close_poll(poll_id):
-    """Close poll."""
+    """Close poll, delete associated ballots."""
     statement = "UPDATE Questions SET open = 0 WHERE id = ?"
     db = get_db()
+    db.execute(statement, (poll_id,))
+    statement = "DELETE FROM Ballots WHERE question_id = ?"
     db.execute(statement, (poll_id,))
 
 def close_expired_polls():
