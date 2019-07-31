@@ -28,10 +28,15 @@
 {% endblock %}
 
 {% block content %}
+{% if already_voted %}
 <div class="container">
-  <p>Poll {{ title }}</p>
+    <div class="notification is-danger">It looks like you've already voted on this poll</div>
+</div>
+{% endif %}
+<div class="container">
+  <h4 class="title is-4 has-text-black">{{ title }}</h4>
   <p>{{ question }}</p>
-  <p>Choices are:</p>
+  <h6 class="title is-6 has-text-black">Choices are:</h6>
   {% for i in choices.keys() %}
     {{ i }}: {{ choices[i] }}<br>
   {% endfor %}

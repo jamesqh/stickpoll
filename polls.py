@@ -5,8 +5,9 @@ from flask import (abort, Blueprint, current_app, flash, g, make_response,
 
 from db import get_db, query_db
 import db_funcs
-from forms import (EnterPasswordForm, NewPollForm, NewPollFormWithCaptcha,
-                   VoteForm, VoteFormWithCaptcha)
+from forms import (EnterPasswordForm, EnterPasswordFormWithCaptcha,
+                   NewPollForm, NewPollFormWithCaptcha, VoteForm,
+                   VoteFormWithCaptcha, CaptchaOnlyForm)
 from mail import send_mail
 import utils
 
@@ -29,15 +30,16 @@ time_diffs = {"hour": timedelta(hours=1),
 
 @bp.route("/new", methods=("GET", "POST"))
 def new_poll():
-    captcha = True
-    # If the user looks trustworthy, don't ask them for a captcha.
-    if captcha:
-        form = NewPollFormWithCaptcha()
-    else:
+    if utils.valid_session(session):
+        # Looks like a normal user; we won't bother them.
         form = NewPollForm()
+    else:
+        # Check they're human.
+        form = NewPollFormWithCaptcha()
     # No further logic necessary for GET requests.
     if request.method == "GET":
         return render_template("new_poll.html", form=form)
+    # It's a POST: check the form
     if not form.validate_on_submit():
         for error_field, errors in form.errors.items():
             for error in errors:
@@ -79,6 +81,7 @@ def new_poll():
 def get_poll(poll_id):
     if not utils.valid_session(session):
         # User couldn't present valid credentials, so generate clean ones.
+        # TODO: Fix DB stuff to do this all at once?
         cookie_id = db_funcs.new_cookie()
         cookie_hash = binascii.hexlify(os.urandom(32)).decode("ascii")
         session["id"] = cookie_id
@@ -92,6 +95,9 @@ def get_poll(poll_id):
         form = VoteFormWithCaptcha()
     else:
         form = VoteForm()
+    if current_app.config["DEBUG"]:
+        # Recaptcha probably won't work
+        form = VoteForm()
     # Query database for poll details.
     row = db_funcs.get_poll(poll_id)
     if row is None:
@@ -104,8 +110,16 @@ def get_poll(poll_id):
         return redirect(url_for("polls.get_results", poll_id=poll_id))
     # Check if the poll is in the user's voting record already.
     if poll_id in session["votes"]:
-        flash("I think you've already voted on this!")
+        already_voted = True
+    else:
+        already_voted = False
+    # TODO: Fix the HTML for that so it isn't awful?
+    # Argh why can't I flash to current request.
     if request.method == "POST":
+        if already_voted and not current_app.config["ALLOW_REPEAT_VOTES"]:
+            # Users aren't allowed to vote twice.
+            flash("You've already voted on this poll")
+            return redirect(url_for("polls.get_poll", poll_id=poll_id))
         if not form.validate_on_submit():
             for error_field, errors in form.errors.items():
                 for error in errors:
@@ -164,7 +178,8 @@ def get_poll(poll_id):
                                         poll_id=poll_id,
                                         choices_json=choices_json,
                                         early_results=early_results,
-                                        form=form)
+                                        form=form,
+                                        already_voted=already_voted)
 
 def generate_results(poll_id):
     # Seed the RNG for consistent tie-breaking.
@@ -257,8 +272,6 @@ def generate_results(poll_id):
 
 @bp.route("<int:poll_id>/results")
 def get_results(poll_id):
-    # First, make some results!
-    # TODO: Handle deadlines and early results properly
     row = db_funcs.get_poll(poll_id)
     if row is None:
         abort(404)
@@ -282,9 +295,6 @@ def get_results(poll_id):
         # No up to date results found, so calculate some.
         generate_results(poll_id)
         row = db_funcs.get_results(poll_id)
-    if row["results_json"] == "Draw":
-        # TODO: Handle draws properly. Although draws probably aren't possible?
-        return "Draw"
     results = json.loads(row["results_json"])
     if sum(results[0].values()) == 0:
         if poll_open:
@@ -308,6 +318,7 @@ def get_results(poll_id):
                            poll_id=poll_id,
                            poll_open=poll_open)
 
+# DEPRECATED?
 def update_open_polls():
     # Close expired polls and generate results for them.
     for poll_id in db_funcs.close_expired_polls():
@@ -320,7 +331,12 @@ def update_open_polls():
 @bp.route("<int:poll_id>/delete", methods=("GET", "POST"))
 def delete_poll(poll_id):
     row = db_funcs.get_poll(poll_id)
-    form = EnterPasswordForm()
+    if current_app.config["DEBUG"]:
+        # Recaptcha probably doesn't work.
+        form = EnterPasswordForm()
+    else:
+        # Sorry, users. I'm concerned about bruteforcing.
+        form = EnterPasswordFormWithCaptcha()
     if request.method == "GET":
         # Send user to form for them to fill in their password.
         if row is None:
@@ -358,7 +374,7 @@ def delete_poll(poll_id):
     return redirect(url_for("home"))
 
 
-@bp.route("<int:poll_id>/delete_by_email")
+@bp.route("<int:poll_id>/delete_by_email", methods=("GET", "POST"))
 def send_deletion_email(poll_id):
     # Query database for poll details.
     row = db_funcs.get_poll(poll_id)
@@ -367,6 +383,16 @@ def send_deletion_email(poll_id):
     if row["email"] is None:
         flash("No email recorded for this poll")
         return redirect(url_for("polls.get_poll", poll_id=poll_id))
+    form = CaptchaOnlyForm()
+    if request.method == "GET":
+        # Send user the captcha.
+        return render_template("send_deletion_email.html", form=form)
+    # It's a POST.
+    # Check for captcha completion or ignore if debug
+    if not form.validate_on_submit() and not current_app.config["DEBUG"]:
+        for error in form.errors:
+            flash(error)
+            return render_template("send_deletion_email.html", form=form)
     # Create expiring single-use token recording poll id and deletion op.
     token = utils.create_token("delete_poll", poll_id)
     # Render the template to put in an email.

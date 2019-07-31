@@ -86,6 +86,9 @@ class NewPollFormWithCaptcha(NewPollForm):
 class EnterPasswordForm(FlaskForm):
     password = PasswordField("Password", validators=[InputRequired()])
 
+class EnterPasswordFormWithCaptcha(EnterPasswordForm):
+    captcha = RecaptchaField()
+
 class SearchForm(FlaskForm):
     search_string = StringField("Search for",
                                 validators=[Length(min=3, max=200),
@@ -121,4 +124,7 @@ class VoteForm(FlaskForm):
     ballot_json = StringField("Preferred choices")
 
 class VoteFormWithCaptcha(VoteForm):
+    captcha = RecaptchaField()
+
+class CaptchaOnlyForm(FlaskForm):
     captcha = RecaptchaField()
