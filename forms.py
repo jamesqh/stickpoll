@@ -1,23 +1,22 @@
-#!/usr/bin/env python3
+"""WTForms classes."""
 
 from copy import copy
 
 from flask_wtf import FlaskForm, RecaptchaField
-from wtforms import (StringField, PasswordField, BooleanField, RadioField,
-                     FieldList)
+from wtforms import (StringField, PasswordField, BooleanField, FieldList)
 from wtforms.validators import Email, EqualTo, InputRequired, Length, Optional
 
 from wtforms.widgets.core import HTMLString, RadioInput
 from wtforms.fields.core import SelectField, text_type
 
 class BulmaCheckradioListWidget():
+    """Widget for use with Bulma Checkradio HTML structure."""
     def __init__(self, tags=None, prefix_label=True):
         self.prefix_label = prefix_label
         if tags is None:
             tags = []
         self.tags = tags
     def __call__(self, field, **kwargs):
-        #kwargs.setdefault("id", field.id)
         html = []
         field_id = field.id
         i = 0
@@ -37,30 +36,29 @@ class BulmaCheckradioListWidget():
         return HTMLString("".join(html))
 
 class BulmaCheckradioField(SelectField):
+    """Subclass of SelectField with BulmaCheckradioListWidget widget."""
     option_widget = RadioInput()
     def __init__(self, label=None, validators=None, coerce=text_type,
                  choices=None, tags=None, **kwargs):
-        super(SelectField, self).__init__(label, validators, **kwargs)
+        super().__init__(label, validators, **kwargs)
         self.coerce = coerce
         self.choices = copy(choices)
         self.widget = BulmaCheckradioListWidget(tags=tags, prefix_label=False)
 
 class NewPollForm(FlaskForm):
+    """Form class for new poll."""
     title = StringField("Title", validators=[Length(min=6, max=200),
                                              InputRequired()])
     question = StringField("Question", validators=[Length(min=6, max=5000),
                                                    InputRequired()])
-##    choices_json = StringField("Choices (separate with semicolon)",
-##                               validators=[Length(min=1, max=100000),
-##                                           InputRequired()])
     choices = FieldList(StringField("Choice", validators=[Length(max=10000)]),
                         min_entries=2, max_entries=12)
     close_in = BulmaCheckradioField("Close poll in",
-                          choices=[("hour", "1 hour"),
-                                   ("day", "1 day"),
-                                   ("week", "1 week"),
-                                   ("month", "1 month")],
-                          default="month")
+                                    choices=[("hour", "1 hour"),
+                                             ("day", "1 day"),
+                                             ("week", "1 week"),
+                                             ("month", "1 month")],
+                                    default="month")
     password = PasswordField("Password to delete poll or close early "
                              "(will be randomly generated if left blank)",
                              validators=[Length(min=6, max=128),
@@ -81,24 +79,24 @@ class NewPollForm(FlaskForm):
                                  default="checked")
 
 class NewPollFormWithCaptcha(NewPollForm):
+    """Form class for new poll with captcha."""
     captcha = RecaptchaField()
 
 class EnterPasswordForm(FlaskForm):
+    """Form class for demanding password."""
     password = PasswordField("Password", validators=[InputRequired()])
 
 class EnterPasswordFormWithCaptcha(EnterPasswordForm):
+    """Form class for demanding password with captcha."""
     captcha = RecaptchaField()
 
 class SearchForm(FlaskForm):
+    """Form class for search page."""
     search_string = StringField("Search for",
                                 validators=[Length(min=3, max=200),
                                             InputRequired()])
-##    title_search = BooleanField("In titles")
-##    text_search = BooleanField("In question texts")
-##    search_open = BooleanField("Search open polls")
-##    search_closed = BooleanField("Search closed polls")
     search_columns = BulmaCheckradioField("In these fields",
-                                          choices=[("both","Title and text"),
+                                          choices=[("both", "Title and text"),
                                                    ("title", "Title only"),
                                                    ("text", "Text only")],
                                           default="both",
@@ -121,10 +119,13 @@ class SearchForm(FlaskForm):
                                      tags=["li"])
 
 class VoteForm(FlaskForm):
+    """Form class for hidden/noscript ballot_json field in poll page."""
     ballot_json = StringField("Preferred choices")
 
 class VoteFormWithCaptcha(VoteForm):
+    """Form class for hidden/noscript ballot_json field in poll page with captcha."""
     captcha = RecaptchaField()
 
 class CaptchaOnlyForm(FlaskForm):
+    """Form with only captcha."""
     captcha = RecaptchaField()
