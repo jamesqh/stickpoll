@@ -1,15 +1,4 @@
-#!/usr/bin/env python3
-
-from flask import (abort, Blueprint, current_app, flash, g, make_response,
-                   redirect, render_template, request, session, url_for)
-
-from db import get_db, query_db
-import db_funcs
-from forms import (EnterPasswordForm, EnterPasswordFormWithCaptcha,
-                   NewPollForm, NewPollFormWithCaptcha, VoteForm,
-                   VoteFormWithCaptcha, CaptchaOnlyForm)
-from mail import send_mail
-import utils
+"""Blueprint for polls."""
 
 import binascii
 from collections import defaultdict
@@ -19,6 +8,16 @@ import hmac
 import json
 import os
 import random
+
+from flask import (abort, Blueprint, current_app, flash, redirect, render_template, request,
+                   session, url_for)
+
+import db_funcs
+from forms import (EnterPasswordForm, EnterPasswordFormWithCaptcha,
+                   NewPollForm, NewPollFormWithCaptcha, VoteForm,
+                   VoteFormWithCaptcha, CaptchaOnlyForm)
+from mail import send_mail
+import utils
 
 bp = Blueprint("polls", __name__, url_prefix="/polls")
 
@@ -30,6 +29,7 @@ time_diffs = {"hour": timedelta(hours=1),
 
 @bp.route("/new", methods=("GET", "POST"))
 def new_poll():
+    """View function for new poll page."""
     if utils.valid_session(session):
         # Looks like a normal user; we won't bother them.
         form = NewPollForm()
@@ -79,6 +79,7 @@ def new_poll():
 
 @bp.route("<int:poll_id>/", methods=("GET", "POST"))
 def get_poll(poll_id):
+    """View function for get poll page."""
     if not utils.valid_session(session):
         # User couldn't present valid credentials, so generate clean ones.
         # TODO: Fix DB stuff to do this all at once?
@@ -182,6 +183,7 @@ def get_poll(poll_id):
                                         already_voted=already_voted)
 
 def generate_results(poll_id):
+    """Count ballots for this poll by IRV and record results to database."""
     # Seed the RNG for consistent tie-breaking.
     random.seed(poll_id)
     choices = [row["choice_number"] for row in db_funcs.get_choices(poll_id)]
@@ -272,6 +274,7 @@ def generate_results(poll_id):
 
 @bp.route("<int:poll_id>/results")
 def get_results(poll_id):
+    """View function for get poll results page."""
     row = db_funcs.get_poll(poll_id)
     if row is None:
         abort(404)
@@ -320,16 +323,18 @@ def get_results(poll_id):
 
 # DEPRECATED?
 def update_open_polls():
+    """Do housekeeping."""
     # Close expired polls and generate results for them.
     for poll_id in db_funcs.close_expired_polls():
         generate_results(poll_id)
         # TODO: Delete ballots too.
     # Generate results for polls that are still open and preview enabled.
-    for poll_id in db_funcs.get_open_early_resultspolls():
+    for poll_id in db_funcs.get_open_early_results_polls():
         generate_results(poll_id)
 
 @bp.route("<int:poll_id>/delete", methods=("GET", "POST"))
 def delete_poll(poll_id):
+    """View function for delete poll page."""
     row = db_funcs.get_poll(poll_id)
     if current_app.config["DEBUG"]:
         # Recaptcha probably doesn't work.
@@ -348,8 +353,8 @@ def delete_poll(poll_id):
         for error in form.errors:
             flash(error)
             return render_template("delete_poll.html", title=row["title"],
-                               question=row["text"], email=row["email"],
-                               poll_id=poll_id, form=form)
+                                   question=row["text"], email=row["email"],
+                                   poll_id=poll_id, form=form)
     if row is None:
         abort(404)
     if current_app.config["DEBUG"] and form.password.data == "admin":
@@ -376,6 +381,7 @@ def delete_poll(poll_id):
 
 @bp.route("<int:poll_id>/delete_by_email", methods=("GET", "POST"))
 def send_deletion_email(poll_id):
+    """View function for send poll deletion email page."""
     # Query database for poll details.
     row = db_funcs.get_poll(poll_id)
     if row is None:
@@ -416,6 +422,7 @@ def send_deletion_email(poll_id):
 
 @bp.route("<int:poll_id>/delete_by_email/<token>")
 def send_delete_token(poll_id, token):
+    """View function for reading token from email deletion link."""
     try:
         d = utils.read_token(token)
         if d["op"] == "delete_poll" and d["id"] == poll_id:
