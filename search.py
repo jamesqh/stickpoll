@@ -1,12 +1,10 @@
-#!/usr/bin/env python3
+"""Blueprint for search page."""
 
-from flask import (abort, Blueprint, flash, g, redirect, render_template,
-                   request, session, url_for)
+from flask import Blueprint, flash, render_template, request
 
 import bleach
 
 from apsw import SQLError
-from db import get_db, query_db
 from forms import SearchForm
 import db_funcs
 
@@ -14,6 +12,7 @@ bp = Blueprint("search", __name__, url_prefix="/search")
 
 @bp.route("/", methods=("GET", "POST"))
 def search_page():
+    """View function for search page."""
     form = SearchForm()
     if request.method == "GET":
         return render_template("search.html", form=form)
