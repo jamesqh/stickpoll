@@ -7,22 +7,23 @@
     <h4 class="title is-4 has-text-black">What?</h2>
     <p>Nobody should use FPTP for anything that matters, or even that doesn't matter. Create and vote on polls using an instant runoff voting system.</p>
     <div class="is-divider"></div>
-    <!-- <div class="columns is-centered"> -->
-        <!-- <div class="column is-half"><div class="level"><div class="level-item"> -->
-            <!-- <a href="{{ url_for('polls.new_poll') }}" class="button is-info is-medium is-uppercase has-text-weight-bold"><span>Ask something</span><span class="icon"><i class="fas fa-poll-h"></i></a> -->
-        <!-- </div></div></div> -->
-        <!-- <div class="column is-half"><div class="level"><div class="level-item"> -->
-            <!-- <a href="{{ url_for('about') }}" class="button is-warning is-medium is-uppercase has-text-weight-bold"><span>Read more</span><span class="icon"><i class="fas fa-poll-h"></i></a> -->
-        <!-- </div></div></div> -->
-    <!-- </div> -->
-    <div class="columns is-centered">
-        <div class="column is-half">
-            <a href="{{ url_for('polls.new_poll') }}" class="button is-info is-medium is-uppercase has-text-weight-bold"><span>Ask something</span><span class="icon"><i class="fas fa-poll-h"></i></a>
-        </div>
-        <div class="column is-half">
-            <a href="{{ url_for('about') }}" class="button is-warning is-medium is-uppercase has-text-weight-bold"><span>Read more</span><span class="icon"><i class="fas fa-poll-h"></i></a>
-        </div>
+    <div class="columns is-centered is-desktop">
+        <a href="{{ url_for('polls.new_poll') }}" class="button is-info is-medium is-uppercase has-text-weight-bold"><span>Ask something</span><span class="icon"><i class="fas fa-poll-h"></i></a>
+        <a href="{{ url_for('about') }}" class="button is-warning is-medium is-uppercase has-text-weight-bold"><span>Read more</span><span class="icon"><i class="fas fa-poll-h"></i></a>
     </div>
+    <!-- <div class="container"> -->
+        <!-- <a href="{{ url_for('polls.new_poll') }}" class="button is-info is-medium is-uppercase has-text-weight-bold"><span>Ask something</span><span class="icon"><i class="fas fa-poll-h"></i></a> -->
+        <!-- <a href="{{ url_for('about') }}" class="button is-warning is-medium is-uppercase has-text-weight-bold"><span>Read more</span><span class="icon"><i class="fas fa-poll-h"></i></a> -->
+    <!-- </div> -->
+    <!-- <div class="level"> -->
+        <!-- <div class="level-item"> -->
+            <!-- <a href="{{ url_for('polls.new_poll') }}" class="button is-info is-medium is-uppercase has-text-weight-bold"><span>Ask something</span><span class="icon"><i class="fas fa-poll-h"></i></a> -->
+        <!-- </div> -->
+        <!-- <div class="level-item"> -->
+            <!-- <a href="{{ url_for('about') }}" class="button is-warning is-medium is-uppercase has-text-weight-bold"><span>Read more</span><span class="icon"><i class="fas fa-poll-h"></i></a> -->
+        <!-- </div> -->
+    <!-- </div> -->
+    <!-- These are all so ugly!!!!!! -->
   </div>
   <div class="column is-half">
     <h4 class="title is-4 has-text-black">Why?</h2>
