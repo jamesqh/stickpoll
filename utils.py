@@ -1,18 +1,17 @@
-#!/usr/bin/env python3
-
-import db_funcs
+"""Various convenience functions that should probably be elsewhere."""
 
 import base64
 import binascii
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 import hashlib
 import hmac
 import json
 import os
-import random
 import string
 
 from flask import current_app
+
+import db_funcs
 
 def generate_password():
     """Securely generate 32 character alphanumeric password."""
