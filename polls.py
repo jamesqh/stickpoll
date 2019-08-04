@@ -88,6 +88,8 @@ def get_poll(poll_id):
         session["id"] = cookie_id
         session["votes"] = []
         session["cookie_hash"] = cookie_hash
+        session.permanent = True
+        session.modified = True
         db_funcs.update_cookie(cookie_id, cookie_hash,
                                int(datetime.now().timestamp()))
         current_app.logger.info("New session instantiated")
@@ -154,6 +156,7 @@ def get_poll(poll_id):
         session["votes"].append(poll_id)
         cookie_hash = binascii.hexlify(os.urandom(32)).decode("ascii")
         session["cookie_hash"] = cookie_hash
+        session.modified = True
         db_funcs.update_cookie(session["id"], cookie_hash,
                                int(datetime.now().timestamp()))
         if row["early_results"]:
