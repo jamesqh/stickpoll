@@ -29,4 +29,5 @@ def search_page():
         return render_template("search.html", form=form)
     for row in search_results:
         row["snippet"] = bleach.clean(row["snippet"], tags=["b"])
+        row["votes"] = db_funcs.get_number_votes_cast(row["rowid"])
     return render_template("search_results.html", search_results=search_results)

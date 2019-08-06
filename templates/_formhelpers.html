@@ -1,4 +1,5 @@
 {% macro render_field(field) %}
+  <!-- TODO: you never actually use any of this, right? -->
   <div class="field">
     {% if "class" in kwargs and kwargs["class"] == "radio" %}
     <label class="radio">{{ field.label }}</label>

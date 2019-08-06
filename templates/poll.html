@@ -107,7 +107,8 @@ var vm = new Vue({
   el: "#vue_ballot",
   data: {
     selected_choices: [],
-    unselected_choices: {{ choices_json|tojson|safe }}
+    // TODO: is this actually safe?
+    unselected_choices: {{ choices_json|tojson }}
   },
   methods: {
     add: function(element_num) {

@@ -22,8 +22,9 @@ def add_poll(title, question, choices, close_date, early_results, password,
     Returns:
         int: Poll id number.
     """
-    salt = hashlib.sha1(title.encode("utf-8")
-                        + str(close_date).encode("utf-8")).digest()
+##    salt = hashlib.sha1(title.encode("utf-8")
+##                        + str(close_date).encode("utf-8")).digest()
+    salt = utils.get_poll_salt(title, close_date)
     token = utils.hash_password(password, salt)
     statement = ("BEGIN; INSERT INTO Questions (title, text, open, "
                  "close_date, early_results, token, email) "
@@ -202,6 +203,16 @@ def search_db(search_string, search_open, search_columns, order_by, order_dir):
     return query_db(statement, query)
 
 def get_recent_polls(number_polls, open_polls):
+    """Fetch n most recent open/closed polls."""
     statement = ("SELECT * FROM Questions WHERE open = ? "
                  "ORDER BY id DESC LIMIT ?")
     return query_db(statement, (int(open_polls), number_polls))
+
+def get_number_votes_cast(poll_id):
+    """Count the number of votes cast for a given poll."""
+    statement = "SELECT SUM(count) AS count FROM Ballots WHERE question_id = ?"
+    count = query_db(statement, (poll_id,), one=True)["count"]
+    if count is None:
+        return 0
+    else:
+        return count

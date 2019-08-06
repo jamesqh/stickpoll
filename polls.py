@@ -366,10 +366,10 @@ def delete_poll(poll_id):
         db_funcs.delete_poll(poll_id)
         flash("Deletion successful!")
         return redirect(url_for("home"))
-    # Salt: sha1(poll title + close_date)
-    # Todo: integrate poll id?
-    salt = hashlib.sha1(row["title"].encode("ascii")
-                        + str(row["close_date"]).encode("ascii")).digest()
+    # Salt: sha256(poll title + close_date)
+##    salt = hashlib.sha1(row["title"].encode("ascii")
+##                          + str(row["close_date"]).encode("ascii")).digest()
+    salt = utils.get_poll_salt(row["title"], row["close_date"])
     # Get hash of password+salt
     token = utils.hash_password(form.password.data, salt)
     # Compare given hash with known hash using safe comparison function
