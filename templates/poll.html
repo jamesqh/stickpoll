@@ -36,13 +36,21 @@
 <div class="container">
   <h4 class="title is-4 has-text-black">{{ title }}</h4>
   <p>{{ question }}</p>
-  <h6 class="title is-6 has-text-black">Choices are:</h6>
-  {% for i in choices.keys() %}
-    {{ i }}: {{ choices[i] }}<br>
-  {% endfor %}
   <p>Poll closes at: {{ close_date }}</p>
+  <p>
+    Below you should see two boxes, one empty - your ballot - and one containing a list of unselected answers. To vote, add answers to your ballot in order from most to least preferred.
+  </p>
+  <p>
+    You can drag answers to and from your ballot, and drag within your ballot to re-arrange them. Double clicking on an answer will add or remove it. You don't have to add every answer to your ballot, as long as you select 
+    at least one. But by leaving multiple answers unranked, you are forfeiting a chance to vote against your least preferred if all the answers you chose lose; it's appropriate to do this only if you genuinely dislike 
+    all your unselected answers equally.
+  </p>
   <form method="post">
     <div id="hide_if_javascript" style="display:block">
+    <h6 class="title is-6 has-text-black">Choices are:</h6>
+    {% for i in choices.keys() %}
+      {{ i }}: {{ choices[i] }}<br>
+    {% endfor %}
     List your preferred choice numbers in order, separated by semicolons:<br>
     {{ form.ballot_json(id="ballot_json_field") }}
     </div>
