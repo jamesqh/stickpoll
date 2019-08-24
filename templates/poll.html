@@ -37,6 +37,7 @@
   <h4 class="title is-4 has-text-black">{{ title }}</h4>
   <p>{{ question }}</p>
   <p>Poll closes at: {{ close_date }}</p>
+  <div class="is-divider"></div>
   <p>
     Below you should see two boxes, one empty - your ballot - and one containing a list of unselected answers. To vote, add answers to your ballot in order from most to least preferred.
   </p>
@@ -45,6 +46,7 @@
     at least one. But by leaving multiple answers unranked, you are forfeiting a chance to vote against your least preferred if all the answers you chose lose; it's appropriate to do this only if you genuinely dislike 
     all your unselected answers equally.
   </p>
+  <div class="is-divider"></div>
   <form method="post">
     <div id="hide_if_javascript" style="display:block">
     <h6 class="title is-6 has-text-black">Choices are:</h6>
@@ -61,50 +63,53 @@
     <!-- <p> -->
         <!-- <input class="button is-info" type="submit" value="Submit"> -->
     <!-- </p> -->
-    <div class="level">
-      <div class="level-left">
-        <div class="level-item">
-          <input class="button is-info" type="submit" value="Submit">
+    <div id="vue_ballot">
+        <h2 class="subtitle has-text-black">Your ballot</h2>
+        <div class="columns is-vcentered">
+            <div class="column is-8">
+                <draggable v-model="selected_choices" class="dragArea" :options="{group:'all_choices', draggable: '.choiceDiv'}" @sort="updateBallotField">
+                  <div v-for="element in selected_choices" class="choiceDiv columns is-vcentered" v-on:dblclick="remove(element.num)">
+                    <div class="column is-11">[[ element.name ]]</div>
+                    <div class="column is-1"><div class="delete" @click="remove(element.num)"></div></div>
+                  </div>
+                  <div v-if="selected_choices.length === 0">Drag your choices here to add them to your ballot</div>
+                </draggable>
+                <div class="column is-4"></div>
+            </div>
         </div>
-        {% if early_results %}
-        <div class="level-item">
-          <a class="button" href={{ url_for("polls.get_results", poll_id=poll_id) }}>Results</a>
+        <div class="level">
+            <div class="level-left">
+                <div class="level-item">
+                    <input class="button is-info" type="submit" value="Submit">
+                </div>
+                <div class="level-item">
+                    <button class="button" slot="footer" @click="clearBallot">Clear ballot</button>
+                </div>
+            </div>
         </div>
-        {% endif %}
-        <div class="level-item">
-          <a class="button" href={{ url_for("polls.delete_poll", poll_id=poll_id) }}>Delete poll</a>
+        <div class="level">
+            <div class="level-left">
+                <div class="level-item">
+                    <a class="is-link" href={{ url_for("polls.get_results", poll_id=poll_id) }}>Results</a>
+                </div>
+                <div class="level-item">
+                    <a class="is-link" href={{ url_for("polls.delete_poll", poll_id=poll_id) }}>Delete poll</a>
+                </div>
+            </div>
         </div>
-      </div>
+        <h2 class="subtitle has-text-black">Candidates</h2>
+        <div class="columns is-vcentered">
+            <div class="column is-8">
+            <draggable v-model="unselected_choices" class="dragArea" :options="{group:'all_choices', draggable: '.choiceDiv'}">
+              <div v-for="element in unselected_choices" class="choiceDiv columns is-vcentered" v-on:dblclick="add(element.num)">
+                <div class="column is-8">[[element.name]]</div>
+              </div>
+              <div>Drag choices here to remove them from your ballot</div>
+            </draggable>
+            </div>
+        </div>
     </div>
   </form>
-  <div id="vue_ballot">
-    <h2 class="subtitle">Your ballot</h2>
-    <div class="columns is-vcentered">
-    <div class="column is-8">
-    <draggable v-model="selected_choices" class="dragArea" :options="{group:'all_choices', draggable: '.choiceDiv'}" @sort="updateBallotField">
-      <div v-for="element in selected_choices" class="choiceDiv columns is-vcentered" v-on:dblclick="remove(element.num)">
-        <div class="column is-11">[[ element.name ]]</div>
-        <div class="column is-1"><div class="delete" @click="remove(element.num)"></div></div>
-      </div>
-      <div v-if="selected_choices.length === 0">Drag your choices here to add them to your ballot</div>
-    </draggable>
-    <div class="column is-4"></div>
-    </div>
-    </div>
-    <button class="button" slot="footer" @click="clearBallot">Clear ballot</button>
-    <h2 class="subtitle">Candidates</h2>
-    <div class="columns is-vcentered">
-    <div class="column is-8">
-    <draggable v-model="unselected_choices" class="dragArea" :options="{group:'all_choices', draggable: '.choiceDiv'}">
-      <div v-for="element in unselected_choices" class="choiceDiv columns is-vcentered" v-on:dblclick="add(element.num)">
-        <div class="column is-8">[[element.name]]</div>
-      </div>
-      <div>Drag choices here to remove them from your ballot</div>
-    </draggable>
-    </div>
-    <div class="column is-4"></div>
-  </div>
-</div>
 {% endblock %}
 
 {% block script %}
